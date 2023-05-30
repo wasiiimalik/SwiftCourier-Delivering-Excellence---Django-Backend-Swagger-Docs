@@ -6,14 +6,26 @@ from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from .models import Order, Customer, Driver, DeliveryStatus
 from .serializers import OrderSerializer, CustomerSerializer, DriverSerializer, DeliveryStatusSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework.permissions import IsAuthenticated
+
+
+
 
 class CustomAPIException(APIException):
     def __init__(self, detail):
         self.detail = detail
 
+
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 class CustomerViewSet(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
+    permission_classes = [IsAuthenticated]
 
     def create(self, request, *args, **kwargs):
         try:
@@ -26,6 +38,9 @@ class CustomerViewSet(viewsets.ModelViewSet):
         except Exception as e:
             raise CustomAPIException(detail=str(e))
 
+
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 class DriverViewSet(viewsets.ModelViewSet):
     queryset = Driver.objects.all()
     serializer_class = DriverSerializer
@@ -42,10 +57,17 @@ class DriverViewSet(viewsets.ModelViewSet):
         except Exception as e:
             raise CustomAPIException(detail=str(e))
 
+
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 class DeliveryStatusViewSet(viewsets.ModelViewSet):
     queryset = DeliveryStatus.objects.all()
     serializer_class = DeliveryStatusSerializer
 
+
+
+@authentication_classes([JWTAuthentication, SessionAuthentication, BasicAuthentication])
+@permission_classes([IsAuthenticated])
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
